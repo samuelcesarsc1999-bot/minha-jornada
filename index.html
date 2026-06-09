@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#17243d">
+  <meta name="theme-color" content="#090b10">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Minha Jornada">
@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon.svg">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
   <div class="app-shell">
@@ -133,7 +133,7 @@
 
   <dialog id="goalDialog">
     <form method="dialog" id="goalForm" class="modal-form">
-      <div class="modal-head"><div><span class="eyebrow">Planejamento</span><h2 id="goalDialogTitle">Novo objetivo</h2></div><button value="cancel" class="icon-btn">×</button></div>
+      <div class="modal-head"><div><span class="eyebrow">Planejamento</span><h2 id="goalDialogTitle">Novo objetivo</h2></div><button type="button" class="icon-btn modal-close" data-dialog="goalDialog" aria-label="Fechar">×</button></div>
       <input type="hidden" name="id">
       <label>Objetivo<input name="name" required></label>
       <div class="form-grid">
@@ -148,13 +148,13 @@
       <label>Meta / duração<input name="duration" placeholder="Ex.: 30 minutos"></label>
       <label>Observações<textarea name="notes" rows="3"></textarea></label>
       <label class="toggle-label"><input name="active" type="checkbox" checked> Objetivo ativo</label>
-      <div class="modal-actions"><button value="cancel" class="ghost-btn">Cancelar</button><button type="submit" value="default" class="primary-btn">Salvar objetivo</button></div>
+      <div class="modal-actions"><button type="button" class="ghost-btn modal-cancel" data-dialog="goalDialog">Cancelar</button><button type="submit" class="primary-btn">Salvar objetivo</button></div>
     </form>
   </dialog>
 
   <dialog id="transactionDialog">
     <form method="dialog" id="transactionForm" class="modal-form">
-      <div class="modal-head"><div><span class="eyebrow">Finanças</span><h2>Novo lançamento</h2></div><button value="cancel" class="icon-btn">×</button></div>
+      <div class="modal-head"><div><span class="eyebrow">Finanças</span><h2>Novo lançamento</h2></div><button type="button" class="icon-btn modal-close" data-dialog="transactionDialog" aria-label="Fechar">×</button></div>
       <div class="form-grid">
         <label>Data<input name="date" type="date" required></label>
         <label>Tipo<select name="type"><option>Despesa</option><option>Receita</option></select></label>
@@ -163,7 +163,7 @@
       </div>
       <label>Descrição<input name="description" required></label>
       <label>Forma de pagamento<select name="payment"><option>Pix</option><option>Débito</option><option>Crédito</option><option>Dinheiro</option><option>Boleto</option><option>Transferência</option><option>Outro</option></select></label>
-      <div class="modal-actions"><button value="cancel" class="ghost-btn">Cancelar</button><button type="submit" value="default" class="primary-btn">Salvar lançamento</button></div>
+      <div class="modal-actions"><button type="button" class="ghost-btn modal-cancel" data-dialog="transactionDialog">Cancelar</button><button type="submit" class="primary-btn">Salvar lançamento</button></div>
     </form>
   </dialog>
   <nav class="mobile-nav" aria-label="Navegação principal">
@@ -174,6 +174,6 @@
     <button class="mobile-nav-item" data-view="financas"><span>R$</span><small>Finanças</small></button>
   </nav>
   <div id="toast" class="toast"></div>
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>
