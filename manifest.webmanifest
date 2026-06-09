@@ -1,0 +1,19 @@
+{
+  "name": "Minha Jornada - Planejamento Pessoal",
+  "short_name": "Minha Jornada",
+  "description": "Checklist, objetivos, dashboards e finanças pessoais.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7fb",
+  "theme_color": "#17243d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

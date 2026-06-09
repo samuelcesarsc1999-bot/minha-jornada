@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17243d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Minha Jornada">
+  <title>Minha Jornada</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">MJ</div>
+        <div><strong>Minha Jornada</strong><span>Planejamento pessoal</span></div>
+      </div>
+      <nav id="nav">
+        <button class="nav-item active" data-view="hoje"><span>◎</span>Hoje</button>
+        <button class="nav-item" data-view="calendario"><span>▦</span>Calendário</button>
+        <button class="nav-item" data-view="objetivos"><span>◇</span>Objetivos</button>
+        <button class="nav-item" data-view="dashboard"><span>⌁</span>Dashboard</button>
+        <button class="nav-item" data-view="financas"><span>R$</span>Finanças</button>
+        <button class="nav-item" data-view="config"><span>⚙</span>Dados e backup</button>
+      </nav>
+      <div class="sidebar-note">
+        <strong>Sábado protegido</strong>
+        <span>Do pôr do sol de sexta ao pôr do sol de sábado.</span>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <button id="menuBtn" class="icon-btn">☰</button>
+        <div>
+          <p class="eyebrow" id="todayLabel"></p>
+          <h1 id="pageTitle">Visão de hoje</h1>
+        </div>
+        <div class="top-actions">
+          <button class="ghost-btn" id="quickExpense">+ Gasto</button>
+          <button class="primary-btn" id="quickGoal">+ Objetivo</button>
+        </div>
+      </header>
+
+      <section id="view-hoje" class="view active">
+        <div class="hero-grid">
+          <article class="hero-card">
+            <div>
+              <span class="eyebrow light">Progresso de hoje</span>
+              <h2 id="todayPercent">0%</h2>
+              <p id="todaySummary">Comece marcando uma atividade.</p>
+            </div>
+            <div class="progress-ring" id="todayRing"><span>0%</span></div>
+          </article>
+          <article class="quote-card">
+            <span class="eyebrow">Foco do dia</span>
+            <h3>Constância antes de intensidade.</h3>
+            <p>Um dia bem cuidado ajuda a construir uma vida bem direcionada.</p>
+          </article>
+        </div>
+        <div class="section-heading">
+          <div><span class="eyebrow">Checklist</span><h2>Atividades planejadas</h2></div>
+          <input type="date" id="todayPicker">
+        </div>
+        <div id="todayTasks" class="task-groups"></div>
+      </section>
+
+      <section id="view-calendario" class="view">
+        <div class="section-heading">
+          <div><span class="eyebrow">Acompanhamento</span><h2>Checklist mensal</h2></div>
+          <div class="inline-controls">
+            <select id="monthSelect"></select>
+            <select id="yearSelect"></select>
+          </div>
+        </div>
+        <div class="calendar-wrap"><table id="calendarTable"></table></div>
+      </section>
+
+      <section id="view-objetivos" class="view">
+        <div class="section-heading">
+          <div><span class="eyebrow">Planejamento central</span><h2>Objetivos</h2></div>
+          <button class="primary-btn" id="addGoal">+ Novo objetivo</button>
+        </div>
+        <div id="goalFilters" class="filter-row"></div>
+        <div id="goalsGrid" class="goals-grid"></div>
+      </section>
+
+      <section id="view-dashboard" class="view">
+        <div class="section-heading">
+          <div><span class="eyebrow">Análises</span><h2>Dashboard de consistência</h2></div>
+        </div>
+        <div id="kpiGrid" class="kpi-grid"></div>
+        <div class="charts-grid">
+          <article class="panel wide"><div class="panel-title"><h3>Últimos 30 dias</h3><span>Conclusão diária</span></div><div id="dailyChart" class="chart"></div></article>
+          <article class="panel"><div class="panel-title"><h3>Por categoria</h3><span>Média anual</span></div><div id="categoryChart" class="bar-list"></div></article>
+          <article class="panel"><div class="panel-title"><h3>Por mês</h3><span>Evolução em 2026</span></div><div id="monthlyChart" class="chart"></div></article>
+        </div>
+      </section>
+
+      <section id="view-financas" class="view">
+        <div class="section-heading">
+          <div><span class="eyebrow">Livro-caixa</span><h2>Finanças pessoais</h2></div>
+          <button class="primary-btn" id="addTransaction">+ Lançamento</button>
+        </div>
+        <div id="financeKpis" class="kpi-grid finance"></div>
+        <div class="charts-grid">
+          <article class="panel"><div class="panel-title"><h3>Despesas por categoria</h3></div><div id="expenseCategories" class="bar-list"></div></article>
+          <article class="panel"><div class="panel-title"><h3>Fluxo mensal</h3></div><div id="financeChart" class="chart"></div></article>
+        </div>
+        <article class="panel transactions-panel">
+          <div class="panel-title"><h3>Lançamentos</h3><span id="transactionCount"></span></div>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>Data</th><th>Tipo</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th></th></tr></thead><tbody id="transactionsBody"></tbody></table></div>
+        </article>
+      </section>
+
+      <section id="view-config" class="view">
+        <div class="section-heading"><div><span class="eyebrow">Segurança</span><h2>Dados e backup</h2></div></div>
+        <div class="settings-grid">
+          <article class="panel"><h3>Exportar dados</h3><p>Baixe uma cópia de objetivos, conclusões e lançamentos.</p><button id="exportData" class="primary-btn">Baixar backup</button></article>
+          <article class="panel"><h3>Importar dados</h3><p>Restaure um backup criado por este aplicativo.</p><label class="file-btn">Escolher arquivo<input id="importData" type="file" accept=".json"></label></article>
+          <article class="panel install-card"><h3>Instalar no celular</h3><p>Adicione à tela inicial para abrir como um programa e usar mesmo sem internet.</p><button id="installApp" class="primary-btn">Instalar aplicativo</button><small id="installHint">A instalação exige um endereço publicado com HTTPS.</small></article>
+          <article class="panel danger"><h3>Recomeçar</h3><p>Apaga os dados locais e restaura os objetivos iniciais.</p><button id="resetData" class="danger-btn">Restaurar aplicativo</button></article>
+          <article class="panel health-note"><h3>Saúde ocular</h3><p>Pausas visuais podem aliviar cansaço, mas não tratam ceratocone. Não coce os olhos e mantenha acompanhamento com oftalmologista especialista em córnea.</p></article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="goalDialog">
+    <form method="dialog" id="goalForm" class="modal-form">
+      <div class="modal-head"><div><span class="eyebrow">Planejamento</span><h2 id="goalDialogTitle">Novo objetivo</h2></div><button value="cancel" class="icon-btn">×</button></div>
+      <input type="hidden" name="id">
+      <label>Objetivo<input name="name" required></label>
+      <div class="form-grid">
+        <label>Categoria<select name="category"></select></label>
+        <label>Prioridade<select name="priority"><option>Alta</option><option>Média</option><option>Baixa</option></select></label>
+        <label>Frequência<select name="frequency"><option value="daily">Diária</option><option value="weekly">Semanal</option><option value="monthly">Mensal</option><option value="flexible">Flexível</option></select></label>
+        <label>Meta semanal<input name="weeklyTarget" type="number" min="1" max="7" value="1"></label>
+        <label>Início<input name="start" type="date" required></label>
+        <label>Prazo<input name="end" type="date" required></label>
+      </div>
+      <fieldset><legend>Dias planejados</legend><div id="weekdayChecks" class="weekday-checks"></div></fieldset>
+      <label>Meta / duração<input name="duration" placeholder="Ex.: 30 minutos"></label>
+      <label>Observações<textarea name="notes" rows="3"></textarea></label>
+      <label class="toggle-label"><input name="active" type="checkbox" checked> Objetivo ativo</label>
+      <div class="modal-actions"><button value="cancel" class="ghost-btn">Cancelar</button><button type="submit" value="default" class="primary-btn">Salvar objetivo</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="transactionDialog">
+    <form method="dialog" id="transactionForm" class="modal-form">
+      <div class="modal-head"><div><span class="eyebrow">Finanças</span><h2>Novo lançamento</h2></div><button value="cancel" class="icon-btn">×</button></div>
+      <div class="form-grid">
+        <label>Data<input name="date" type="date" required></label>
+        <label>Tipo<select name="type"><option>Despesa</option><option>Receita</option></select></label>
+        <label>Categoria<select name="category"></select></label>
+        <label>Valor<input name="value" type="number" min="0" step="0.01" required></label>
+      </div>
+      <label>Descrição<input name="description" required></label>
+      <label>Forma de pagamento<select name="payment"><option>Pix</option><option>Débito</option><option>Crédito</option><option>Dinheiro</option><option>Boleto</option><option>Transferência</option><option>Outro</option></select></label>
+      <div class="modal-actions"><button value="cancel" class="ghost-btn">Cancelar</button><button type="submit" value="default" class="primary-btn">Salvar lançamento</button></div>
+    </form>
+  </dialog>
+  <nav class="mobile-nav" aria-label="Navegação principal">
+    <button class="mobile-nav-item active" data-view="hoje"><span>◎</span><small>Hoje</small></button>
+    <button class="mobile-nav-item" data-view="calendario"><span>▦</span><small>Mês</small></button>
+    <button class="mobile-nav-item" data-view="objetivos"><span>◇</span><small>Objetivos</small></button>
+    <button class="mobile-nav-item" data-view="dashboard"><span>⌁</span><small>Resumo</small></button>
+    <button class="mobile-nav-item" data-view="financas"><span>R$</span><small>Finanças</small></button>
+  </nav>
+  <div id="toast" class="toast"></div>
+  <script src="app.js?v=3"></script>
+</body>
+</html>
