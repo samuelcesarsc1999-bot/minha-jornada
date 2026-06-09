@@ -68,24 +68,13 @@ function openAppointment(){
 function openTransaction(){
  const form=$("#transactionForm");form.reset();form.date.value=iso(new Date());$("#transactionDialog").showModal();
 }
-function configureQuickAction(view){
- const button=$("#quickGoal"),actions={
-  hoje:{label:"+ Objetivo",title:"Criar novo objetivo",run:()=>openGoal()},
-  agenda:{label:"+ Compromisso",title:"Marcar novo compromisso",run:openAppointment},
-  calendario:{label:"+ Objetivo",title:"Criar objetivo para o checklist",run:()=>openGoal()},
-  objetivos:{label:"+ Objetivo",title:"Criar novo objetivo",run:()=>openGoal()},
-  financas:{label:"+ Lançamento",title:"Criar lançamento financeiro",run:openTransaction}
- },action=actions[view];
- button.hidden=!action;
- if(action){button.textContent=action.label;button.title=action.title;button.setAttribute("aria-label",action.title);button.onclick=action.run}
-}
 function setView(name){
  if(!name)return;
  $$(".view").forEach(v=>v.classList.toggle("active",v.id===`view-${name}`));
  $$(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
  $$(".mobile-nav-item").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
  const titles={hoje:"Visão de hoje",agenda:"Agenda pessoal",calendario:"Checklist mensal",objetivos:"Planejamento central",dashboard:"Dashboard",financas:"Finanças pessoais",config:"Dados e backup"};
- $("#pageTitle").textContent=titles[name];$(".sidebar").classList.remove("open");configureQuickAction(name);
+ $("#pageTitle").textContent=titles[name];$(".sidebar").classList.remove("open");
  ({hoje:renderToday,agenda:renderAgenda,calendario:renderCalendar,objetivos:renderGoals,dashboard:renderDashboard,financas:renderFinance,config:()=>{}})[name]();
 }
 function renderToday(){
@@ -158,7 +147,7 @@ function init(){
  const navigate=e=>{const button=e.target.closest("[data-view]");if(!button)return;e.preventDefault();setView(button.dataset.view)};
  $("#nav").addEventListener("click",navigate);
  $(".mobile-nav").addEventListener("click",navigate);
- $("#menuBtn").onclick=()=>$(".sidebar").classList.toggle("open");$("#todayPicker").onchange=renderToday;$("#agendaDate").onchange=renderAgenda;$("#monthSelect").onchange=renderCalendar;$("#yearSelect").onchange=renderCalendar;$("#addGoal").onclick=()=>openGoal();$("#quickExpense").onclick=$("#addTransaction").onclick=openTransaction;
+ $("#menuBtn").onclick=()=>$(".sidebar").classList.toggle("open");$("#todayPicker").onchange=renderToday;$("#agendaDate").onchange=renderAgenda;$("#monthSelect").onchange=renderCalendar;$("#yearSelect").onchange=renderCalendar;$("#addGoal").onclick=()=>openGoal();$("#addTransaction").onclick=openTransaction;
  $("#addAppointment").onclick=openAppointment;
  $("#addNote").onclick=()=>{$("#noteForm").reset();$("#noteDialog").showModal()};
  $("#addList").onclick=()=>{$("#listForm").reset();$("#listDialog").showModal()};
@@ -174,6 +163,6 @@ function init(){
  $("#resetData").onclick=()=>{if(confirm("Apagar todos os dados e restaurar os objetivos iniciais?")){state=defaultState();save();location.reload()}};
  let installPrompt=null;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;$("#installHint").textContent="O aplicativo está pronto para ser instalado."});$("#installApp").onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null}else{alert("No iPhone: toque em Compartilhar e depois em “Adicionar à Tela de Início”. No Android: abra o menu do navegador e escolha “Instalar aplicativo”.")}};
  if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"}).then(reg=>reg.update()).catch(()=>{});
- configureQuickAction("hoje");renderToday();
+ renderToday();
 }
 init();
