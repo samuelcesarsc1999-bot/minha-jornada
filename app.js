@@ -1,22 +1,83 @@
 const STORAGE_KEY="minha-jornada-v1";
 function makeId(){return "id-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10)}
 const categoryDefinitions=[
- {name:"Espiritualidade",color:"#59a8ff",bg:"#142f4d"},
- {name:"Desenvolvimento Pessoal",color:"#b28cff",bg:"#2d2145"},
- {name:"Desenvolvimento Financeiro",color:"#54d98c",bg:"#173b29"},
- {name:"Desenvolvimento Profissional",color:"#ffad5c",bg:"#452e18"},
- {name:"Desenvolvimento Intelectual",color:"#55d6dc",bg:"#15383b"},
- {name:"Desenvolvimento Físico",color:"#ff747f",bg:"#451f25"},
- {name:"Saúde Ocular",color:"#68d5bd",bg:"#173b35"},
- {name:"Casa",color:"#e6bd58",bg:"#40351a"},
- {name:"Relacionamentos",color:"#f08fc3",bg:"#412439"},
- {name:"Lazer",color:"#dccf6a",bg:"#3c381c"},
- {name:"Outro",color:"#aeb4c0",bg:"#292d35"}
+ {name:"Espiritualidade",color:"#73b7ff",bg:"#142d47"},
+ {name:"Desenvolvimento Pessoal",color:"#c09bff",bg:"#2b2142"},
+ {name:"Desenvolvimento Financeiro",color:"#67d99a",bg:"#173829"},
+ {name:"Desenvolvimento Profissional",color:"#ffb86b",bg:"#402c1a"},
+ {name:"Desenvolvimento Intelectual",color:"#6ad6df",bg:"#17363a"},
+ {name:"Desenvolvimento Físico",color:"#ff8a6b",bg:"#42271f"},
+ {name:"Saúde Ocular",color:"#78d5c2",bg:"#183832"},
+ {name:"Casa",color:"#e8c66e",bg:"#3b321d"},
+ {name:"Relacionamentos",color:"#ef9bc7",bg:"#3d2637"},
+ {name:"Lazer",color:"#d9cf78",bg:"#38351f"},
+ {name:"Outro",color:"#b8bdc8",bg:"#292d35"}
 ];
 const categories=categoryDefinitions.map(c=>c.name);
 const categoryAliases={"Profissional":"Desenvolvimento Profissional","Estudos":"Desenvolvimento Intelectual","Saúde":"Desenvolvimento Físico","Finanças":"Desenvolvimento Financeiro","Desenvolvimento":"Desenvolvimento Pessoal","Produtividade":"Desenvolvimento Pessoal"};
 const financeCategories=["Moradia","Alimentação","Transporte","Saúde","Educação","Lazer","Doações","Assinaturas","Impostos","Investimentos","Renda","Outros"];
 const week=[{id:0,label:"Dom"},{id:1,label:"Seg"},{id:2,label:"Ter"},{id:3,label:"Qua"},{id:4,label:"Qui"},{id:5,label:"Sex"},{id:6,label:"Sáb"}];
+const dailyBible=[
+ {ref:"Salmo 119:105",text:"A Palavra de Deus ilumina o próximo passo e orienta o caminho inteiro."},
+ {ref:"Provérbios 3:5-6",text:"Confie no Senhor de todo o coração e permita que Ele dirija suas decisões."},
+ {ref:"Isaías 41:10",text:"Não caminhe dominado pelo medo: Deus está presente, fortalece e sustenta."},
+ {ref:"Filipenses 4:6-7",text:"Apresente suas preocupações a Deus em oração e receba Sua paz."},
+ {ref:"Mateus 6:33",text:"Coloque o reino de Deus em primeiro lugar; o restante encontrará sua ordem."},
+ {ref:"Salmo 46:1",text:"Deus é refúgio seguro e auxílio presente nos momentos difíceis."},
+ {ref:"Josué 1:9",text:"Avance com coragem, pois o Senhor acompanha você por onde for."},
+ {ref:"Romanos 12:2",text:"Permita que Deus renove sua mente e transforme sua maneira de viver."},
+ {ref:"Lamentações 3:22-23",text:"A misericórdia do Senhor se renova a cada manhã; hoje também há esperança."},
+ {ref:"João 15:5",text:"Permaneça unido a Cristo, porque dEle vêm força, fruto e direção."},
+ {ref:"Salmo 37:5",text:"Entregue seus planos ao Senhor, confie e deixe que Ele conduza os resultados."},
+ {ref:"Colossenses 3:23",text:"Faça cada tarefa com dedicação, como um serviço prestado ao Senhor."},
+ {ref:"2 Timóteo 1:7",text:"Deus concede espírito de poder, amor e equilíbrio, não de medo."},
+ {ref:"Miquéias 6:8",text:"Pratique a justiça, ame a misericórdia e caminhe humildemente com Deus."},
+ {ref:"Salmo 23:1-3",text:"O Senhor cuida, restaura as forças e conduz por caminhos seguros."},
+ {ref:"Tiago 1:5",text:"Quando faltar sabedoria, peça a Deus; Ele oferece direção com generosidade."},
+ {ref:"Gálatas 6:9",text:"Não desista de fazer o bem; a perseverança produzirá fruto no tempo certo."},
+ {ref:"Mateus 11:28",text:"Leve o cansaço a Cristo e encontre nEle descanso para a alma."},
+ {ref:"1 Coríntios 10:31",text:"Que até as atividades comuns sejam realizadas para a glória de Deus."},
+ {ref:"Salmo 90:12",text:"Reconheça o valor de cada dia e desenvolva um coração sábio."},
+ {ref:"Hebreus 12:1-2",text:"Deixe os pesos desnecessários e prossiga olhando firmemente para Jesus."},
+ {ref:"João 14:27",text:"Cristo oferece uma paz que não depende das circunstâncias ao redor."},
+ {ref:"Efésios 4:32",text:"Escolha a bondade, a compaixão e o perdão em seus relacionamentos."},
+ {ref:"Salmo 34:8",text:"Experimente pessoalmente a bondade de Deus e encontre segurança nEle."},
+ {ref:"Romanos 8:28",text:"Deus pode conduzir todas as circunstâncias para um propósito de bem."},
+ {ref:"1 Pedro 5:7",text:"Entregue a Deus toda ansiedade, porque Ele cuida de você."},
+ {ref:"Isaías 40:31",text:"Quem espera no Senhor recebe forças renovadas para continuar."},
+ {ref:"Filipenses 4:13",text:"Em Cristo há força para enfrentar com fidelidade aquilo que o dia exige."},
+ {ref:"Salmo 51:10",text:"Peça a Deus um coração puro e um espírito firme para recomeçar."},
+ {ref:"João 8:12",text:"Seguir a Cristo significa caminhar na luz e receber vida."},
+ {ref:"Números 6:24-26",text:"Que o cuidado, a graça e a paz do Senhor acompanhem todo o seu dia."}
+];
+const dailyWhiteReflections=[
+ {chapter:"Capítulo 1 — O cuidado de Deus",title:"Sinais do amor de Deus",text:"Observe hoje as evidências do cuidado divino na criação, nas providências simples e nas misericórdias que ainda florescem em meio às dificuldades."},
+ {chapter:"Capítulo 1 — O cuidado de Deus",title:"Conheça o Pai por meio de Jesus",text:"Quando surgir a imagem de um Deus distante ou severo, contemple Cristo. Sua compaixão revela o coração amoroso do Pai."},
+ {chapter:"Capítulo 2 — A ponte sobre o abismo",title:"Cristo é a ponte",text:"O esforço humano não consegue transformar sozinho as fontes do coração. Aproxime-se de Cristo, que reconcilia a fraqueza humana com o poder de Deus."},
+ {chapter:"Capítulo 2 — A ponte sobre o abismo",title:"Você é precioso para Deus",text:"A entrega de Cristo mostra o valor que o Céu atribui a cada pessoa. Viva este dia lembrando que você foi buscado para voltar à comunhão com Deus."},
+ {chapter:"Capítulo 3 — Mudança de rumo",title:"Arrependimento verdadeiro",text:"Reconhecer o erro é mais do que temer suas consequências. Peça a Cristo uma tristeza sincera pelo pecado e disposição para abandoná-lo."},
+ {chapter:"Capítulo 3 — Mudança de rumo",title:"Olhe para Cristo",text:"Não espere tornar-se melhor para então se aproximar. Vá a Jesus como está; é Sua bondade que desperta arrependimento e inicia uma nova direção."},
+ {chapter:"Capítulo 4 — Abra o coração a Deus",title:"Confissão sem desculpas",text:"Abra o coração com sinceridade. Reconheça diante de Deus aquilo que precisa ser corrigido e, quando tiver ferido alguém, procure também a reconciliação."},
+ {chapter:"Capítulo 4 — Abra o coração a Deus",title:"Misericórdia para quem retorna",text:"Deus não exige penitências para comprar o perdão. Ele convida você a confessar, abandonar o pecado e receber Sua misericórdia."},
+ {chapter:"Capítulo 5 — Consagração",title:"Entregue o coração inteiro",text:"A transformação não acontece por uma entrega dividida. Coloque vontade, planos, afetos e escolhas nas mãos de Deus de maneira consciente e voluntária."},
+ {chapter:"Capítulo 5 — Consagração",title:"A escolha de hoje",text:"A maior batalha ocorre dentro do próprio coração. Escolha hoje submeter o eu a Deus e permita que Ele forme em você uma vida livre e santa."},
+ {chapter:"Capítulo 6 — Um direito seu",title:"Receba a promessa pela fé",text:"Perdão, paz e um coração novo são dádivas de Deus. Confie em Sua promessa, não porque sente que merece, mas porque Ele é fiel."},
+ {chapter:"Capítulo 6 — Um direito seu",title:"Não espere sentir para crer",text:"A fé se apoia na palavra de Deus antes das emoções. Agradeça pelo que Ele prometeu e dê passos coerentes com essa confiança."},
+ {chapter:"Capítulo 7 — A obediência é um privilégio",title:"A graça aparece na vida",text:"A obra do Espírito pode ser silenciosa, mas seus resultados surgem nos hábitos, palavras e escolhas. Permita que a rotina testemunhe a mudança interior."},
+ {chapter:"Capítulo 7 — A obediência é um privilégio",title:"Obediência movida pelo amor",text:"Boas obras não compram a salvação; elas revelam a presença de Cristo. Obedeça hoje como resposta de amor, não como tentativa de merecimento."},
+ {chapter:"Capítulo 8 — Crescimento em Cristo",title:"Permaneça ligado à Fonte",text:"Assim como a planta recebe luz e alimento, a vida espiritual cresce recebendo diariamente de Cristo. Comunhão vem antes de fruto."},
+ {chapter:"Capítulo 8 — Crescimento em Cristo",title:"Crescimento sem ansiedade",text:"Você não produz maturidade apenas pela força da preocupação. Volte os olhos para Cristo, receba Sua graça e coopere com o crescimento que Ele realiza."},
+ {chapter:"Capítulo 9 — Atividade e vida",title:"A vida transborda em serviço",text:"Quando o amor de Cristo habita no coração, alcança outras pessoas. Procure hoje uma oportunidade simples de aliviar, encorajar ou ajudar alguém."},
+ {chapter:"Capítulo 9 — Atividade e vida",title:"Comece onde você está",text:"Não espere uma grande missão para servir. O lar, o trabalho e os encontros comuns já são campos onde a bondade de Cristo pode ser demonstrada."},
+ {chapter:"Capítulo 10 — O Deus que eu conheço",title:"Escute Deus no cotidiano",text:"A natureza, a providência e as Escrituras convidam você a conhecer o Criador. Atravesse o dia com atenção às lições que Ele colocou ao seu redor."},
+ {chapter:"Capítulo 10 — O Deus que eu conheço",title:"Estude para conhecer uma Pessoa",text:"Leia a Bíblia buscando ouvir a voz de Deus e encontrar Cristo. O valor do estudo não está apenas na quantidade, mas na verdade acolhida pelo coração."},
+ {chapter:"Capítulo 11 — O privilégio de falar com Deus",title:"Abra o coração como a um amigo",text:"Orar não é informar a Deus aquilo que Ele ignora. É abrir a vida à Sua presença e tornar o coração capaz de receber auxílio, força e paz."},
+ {chapter:"Capítulo 11 — O privilégio de falar com Deus",title:"Leve tudo à oração",text:"Apresente necessidades, alegrias, fraquezas e preocupações. A oração sincera pode acompanhar cada dever e manter a mente voltada para Deus."},
+ {chapter:"Capítulo 12 — Expulse a dúvida",title:"Fé apoiada em evidências",text:"Deus não pede uma crença sem fundamento. Recorde as evidências de Seu caráter, de Sua Palavra e de Sua atuação, mesmo quando nem tudo puder ser explicado."},
+ {chapter:"Capítulo 12 — Expulse a dúvida",title:"Trabalhe com a luz recebida",text:"Não permita que uma questão difícil apague tudo o que já está claro. Pratique a verdade compreendida e continue buscando com humildade."},
+ {chapter:"Capítulo 13 — Regozijo no Senhor",title:"Represente bem a Cristo",text:"Sua maneira de tratar as pessoas comunica uma imagem de Deus. Que bondade, esperança e misericórdia tornem o serviço de Cristo atraente hoje."},
+ {chapter:"Capítulo 13 — Regozijo no Senhor",title:"Escolha falar de esperança",text:"Não alimente continuamente sombras, queixas e desânimo. Recorde as misericórdias de Deus e permita que a gratidão ilumine sua influência."}
+];
 const seedGoals=[
 ["Culto matinal","Espiritualidade","Alta","daily",[0,1,2,3,4,5,6],7,"1 culto","Começar o dia em comunhão com Deus"],
 ["Orar por pelo menos 30 minutos","Espiritualidade","Alta","daily",[0,1,2,3,4,5,6],7,"30 minutos","Fortalecer a vida de oração"],
@@ -61,6 +122,12 @@ function isDone(goalId,date){return !!state.completions[completionKey(goalId,dat
 function toggleDone(goalId,date){const k=completionKey(goalId,date);state.completions[k]?delete state.completions[k]:state.completions[k]=true;save()}
 function tasksForDate(date){return state.goals.filter(g=>isScheduled(g,date)).sort(compareGoals)}
 function dayProgress(date){const tasks=tasksForDate(date);return tasks.length?tasks.filter(g=>isDone(g.id,date)).length/tasks.length:0}
+function devotionalIndex(date,length){const start=new Date(date.getFullYear(),0,0),day=Math.floor((date-start)/86400000);return (day-1)%length}
+function renderDevotional(date){
+ const bible=dailyBible[devotionalIndex(date,dailyBible.length)],reflection=dailyWhiteReflections[devotionalIndex(date,dailyWhiteReflections.length)];
+ $("#dailyBibleReference").textContent=bible.ref;$("#dailyBibleText").textContent=bible.text;
+ $("#dailyWhiteTitle").textContent=reflection.title;$("#dailyWhiteText").textContent=reflection.text;$("#dailyWhiteSource").textContent=`Paráfrase baseada em Caminho a Cristo, ${reflection.chapter}; não é citação literal.`;
+}
 function frequencyLabel(v){return ({daily:"Diária",weekly:"Semanal",monthly:"Mensal",flexible:"Flexível"})[v]||v}
 function openAppointment(){
  const form=$("#appointmentForm");form.reset();form.date.value=$("#agendaDate").value||iso(new Date());$("#appointmentDialog").showModal();
@@ -79,6 +146,7 @@ function setView(name){
 }
 function renderToday(){
  const date=parseDate($("#todayPicker").value),tasks=tasksForDate(date),p=dayProgress(date),done=tasks.filter(g=>isDone(g.id,date)).length;
+ renderDevotional(date);
  $("#todayPercent").textContent=`${Math.round(p*100)}%`;$("#todaySummary").textContent=`${done} de ${tasks.length} atividades concluídas.`;
  $("#todayRing").style.setProperty("--p",Math.round(p*100));$("#todayRing span").textContent=`${Math.round(p*100)}%`;
  const groups=Object.groupBy?Object.groupBy(tasks,g=>g.category):tasks.reduce((a,g)=>((a[g.category]??=[]).push(g),a),{});

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090b10">
+  <meta name="theme-color" content="#0b0f0d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Minha Jornada">
@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon.svg">
-  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="styles.css?v=15">
 </head>
 <body>
   <div class="app-shell">
@@ -54,11 +54,19 @@
             </div>
             <div class="progress-ring" id="todayRing"><span>0%</span></div>
           </article>
-          <article class="quote-card">
-            <span class="eyebrow">Foco do dia</span>
-            <h3>Constância antes de intensidade.</h3>
-            <p>Um dia bem cuidado ajuda a construir uma vida bem direcionada.</p>
-          </article>
+          <div class="devotional-stack">
+            <article class="quote-card bible-card">
+              <span class="eyebrow">Palavra do dia</span>
+              <h3 id="dailyBibleReference">Salmo 119:105</h3>
+              <p id="dailyBibleText"></p>
+            </article>
+            <article class="quote-card white-card">
+              <span class="eyebrow">Reflexão do dia</span>
+              <h3 id="dailyWhiteTitle"></h3>
+              <p id="dailyWhiteText"></p>
+              <small id="dailyWhiteSource">Paráfrase devocional baseada em Caminho a Cristo; não é citação literal.</small>
+            </article>
+          </div>
         </div>
         <div class="section-heading">
           <div><span class="eyebrow">Checklist</span><h2>Atividades planejadas</h2></div>
@@ -233,6 +241,6 @@
     <button class="mobile-nav-item" data-view="config"><span>DB</span><small>Dados</small></button>
   </nav>
   <div id="toast" class="toast"></div>
-  <script src="app.js?v=12"></script>
+  <script src="app.js?v=15"></script>
 </body>
 </html>

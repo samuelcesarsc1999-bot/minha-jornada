@@ -20,3 +20,37 @@ h1,h2,h3,.brand strong,.kpi strong,.hero-card h2{font-family:"Arial Black",Arial
 dialog{background:#14161c;color:#f1f2f5}.modal-form{background:#14161c}.modal-actions{background:#14161c;border-color:#30333c}.weekday-checks label{background:#20232b}.toggle-label input,.weekday-checks input,.task-check{accent-color:#927cff}.toast{background:#ece9ff;color:#171323;font-weight:800}
 .mobile-nav{background:rgba(13,15,20,.97);border-color:#30333c}.mobile-nav-item{color:#999fac}.mobile-nav-item.active{color:#7be0ad;background:#17382c}
 @media(max-width:650px){.topbar{background:rgba(11,13,18,.96)}.quote-card{display:none}.hero-grid{display:block}.hero-card{border-radius:18px}.task-group{border-radius:14px}.section-heading h2{color:#fff}.modal-actions{background:#14161c}}
+
+/* Devocional diário */
+.hero-grid{grid-template-columns:minmax(320px,.9fr) minmax(0,1.35fr);align-items:stretch}
+.devotional-stack{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.devotional-stack .quote-card{display:block;min-height:190px;padding:22px}
+.devotional-stack .quote-card h3{font-size:19px;line-height:1.25;margin:13px 0 9px}
+.devotional-stack .quote-card p{font-size:13px;line-height:1.55;margin:0}
+.devotional-stack .quote-card small{display:block;color:#7f8795;font-size:9px;line-height:1.4;margin-top:14px}
+.bible-card{border-color:#28523d!important;background:linear-gradient(145deg,#14251d,#172d22)!important}
+.white-card{border-color:#3b374b!important;background:linear-gradient(145deg,#191a22,#252132)!important}
+@media(max-width:1100px){.hero-grid{grid-template-columns:1fr}.devotional-stack{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.hero-grid{display:grid;gap:12px}.devotional-stack{grid-template-columns:1fr;gap:10px}.devotional-stack .quote-card{display:block;min-height:auto;padding:17px;border-radius:15px}.devotional-stack .quote-card h3{font-size:17px;margin:10px 0 7px}.devotional-stack .quote-card p{font-size:12px}.devotional-stack .quote-card small{font-size:8px;margin-top:10px}}
+
+/* Refinamento visual e acessibilidade */
+:root{--purple:#58d89a;--green:#58d89a;--ink:#f4f6f5;--muted:#b3b9b6;--line:#353a38;--red:#ff8b83}
+body{background:#0b0f0d}
+h1,h2,h3,.brand strong,.kpi strong,.hero-card h2{font-family:Arial,"Helvetica Neue",sans-serif;font-weight:800;letter-spacing:-.018em}
+.sidebar{background:#080c0a}.topbar{background:rgba(11,15,13,.94)}
+.primary-btn{background:linear-gradient(135deg,#62dda0,#2da36b)}
+.nav-item:hover,.nav-item.active{background:#173829}
+.eyebrow{color:#71dfaa}.badge{background:#18392b;color:#91e7b8}
+.task-copy span,.goal-card p,.panel-title span,.kpi span,.settings-grid .panel p,.appointment-card span,.note-card p{color:#b3b9b6}
+.toggle-label input,.weekday-checks input,.task-check,.list-item input{accent-color:#58d89a}
+.category-tag{border-color:var(--tag-color);box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+.category-tag i{box-shadow:none}
+button,input,select,textarea{transition:border-color .16s,box-shadow .16s,background-color .16s,transform .16s}
+button:active{transform:scale(.98)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(99,222,161,.34);outline-offset:2px;border-color:#63dea1}
+.task-check:focus-visible,.list-item input:focus-visible,.weekday-checks input:focus-visible{outline-color:#8be7b8}
+.mobile-nav-item.active{color:#8ce7b8;background:#17382b}
+.bible-card{border-color:#326348!important;background:linear-gradient(145deg,#14271e,#183425)!important}
+.white-card{border-color:#514664!important;background:linear-gradient(145deg,#1b1922,#282237)!important}
+.devotional-stack .quote-card small{color:#a4aaa7}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
