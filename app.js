@@ -1,6 +1,20 @@
 const STORAGE_KEY="minha-jornada-v1";
 function makeId(){return "id-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10)}
-const categories=["Espiritualidade","Profissional","Estudos","Saúde","Saúde Ocular","Finanças","Desenvolvimento","Produtividade","Casa","Relacionamentos","Lazer","Outro"];
+const categoryDefinitions=[
+ {name:"Espiritualidade",color:"#59a8ff",bg:"#142f4d"},
+ {name:"Desenvolvimento Pessoal",color:"#b28cff",bg:"#2d2145"},
+ {name:"Desenvolvimento Financeiro",color:"#54d98c",bg:"#173b29"},
+ {name:"Desenvolvimento Profissional",color:"#ffad5c",bg:"#452e18"},
+ {name:"Desenvolvimento Intelectual",color:"#55d6dc",bg:"#15383b"},
+ {name:"Desenvolvimento Físico",color:"#ff747f",bg:"#451f25"},
+ {name:"Saúde Ocular",color:"#68d5bd",bg:"#173b35"},
+ {name:"Casa",color:"#e6bd58",bg:"#40351a"},
+ {name:"Relacionamentos",color:"#f08fc3",bg:"#412439"},
+ {name:"Lazer",color:"#dccf6a",bg:"#3c381c"},
+ {name:"Outro",color:"#aeb4c0",bg:"#292d35"}
+];
+const categories=categoryDefinitions.map(c=>c.name);
+const categoryAliases={"Profissional":"Desenvolvimento Profissional","Estudos":"Desenvolvimento Intelectual","Saúde":"Desenvolvimento Físico","Finanças":"Desenvolvimento Financeiro","Desenvolvimento":"Desenvolvimento Pessoal","Produtividade":"Desenvolvimento Pessoal"};
 const financeCategories=["Moradia","Alimentação","Transporte","Saúde","Educação","Lazer","Doações","Assinaturas","Impostos","Investimentos","Renda","Outros"];
 const week=[{id:0,label:"Dom"},{id:1,label:"Seg"},{id:2,label:"Ter"},{id:3,label:"Qua"},{id:4,label:"Qui"},{id:5,label:"Sex"},{id:6,label:"Sáb"}];
 const seedGoals=[
@@ -22,7 +36,11 @@ const seedGoals=[
 const defaultState=()=>({goals:JSON.parse(JSON.stringify(seedGoals)),completions:{},transactions:[],version:1});
 let state=loadState(),currentCategory="Todos";
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-function loadState(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||defaultState()}catch{return defaultState()}}
+function normalizeCategory(category){return categoryAliases[category]||category||"Outro"}
+function categoryInfo(category){const name=normalizeCategory(category),index=categoryDefinitions.findIndex(c=>c.name===name),item=categoryDefinitions[index];return item?{...item,index}:{name,color:"#aeb4c0",bg:"#292d35",index:categories.length}}
+function categoryTag(category){const info=categoryInfo(category);return `<span class="category-tag" style="--tag-color:${info.color};--tag-bg:${info.bg}"><i></i>${info.name}</span>`}
+function compareGoals(a,b){const categoryDifference=categoryInfo(a.category).index-categoryInfo(b.category).index;return categoryDifference||(a.order??0)-(b.order??0)||a.name.localeCompare(b.name,"pt-BR")}
+function loadState(){try{const loaded=JSON.parse(localStorage.getItem(STORAGE_KEY))||defaultState();loaded.goals=(loaded.goals||[]).map(g=>({...g,category:normalizeCategory(g.category)}));return loaded}catch{return defaultState()}}
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
 function iso(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
 function parseDate(s){const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
@@ -39,7 +57,7 @@ function isScheduled(goal,date){
 function completionKey(goalId,date){return `${goalId}|${iso(date)}`}
 function isDone(goalId,date){return !!state.completions[completionKey(goalId,date)]}
 function toggleDone(goalId,date){const k=completionKey(goalId,date);state.completions[k]?delete state.completions[k]:state.completions[k]=true;save()}
-function tasksForDate(date){return state.goals.filter(g=>isScheduled(g,date)).sort((a,b)=>a.order-b.order)}
+function tasksForDate(date){return state.goals.filter(g=>isScheduled(g,date)).sort(compareGoals)}
 function dayProgress(date){const tasks=tasksForDate(date);return tasks.length?tasks.filter(g=>isDone(g.id,date)).length/tasks.length:0}
 function frequencyLabel(v){return ({daily:"Diária",weekly:"Semanal",monthly:"Mensal",flexible:"Flexível"})[v]||v}
 function setView(name){
@@ -56,21 +74,21 @@ function renderToday(){
  $("#todayPercent").textContent=`${Math.round(p*100)}%`;$("#todaySummary").textContent=`${done} de ${tasks.length} atividades concluídas.`;
  $("#todayRing").style.setProperty("--p",Math.round(p*100));$("#todayRing span").textContent=`${Math.round(p*100)}%`;
  const groups=Object.groupBy?Object.groupBy(tasks,g=>g.category):tasks.reduce((a,g)=>((a[g.category]??=[]).push(g),a),{});
- $("#todayTasks").innerHTML=Object.entries(groups).map(([cat,goals])=>`<article class="task-group"><div class="task-group-head"><h3>${cat}</h3><span>${goals.filter(g=>isDone(g.id,date)).length}/${goals.length}</span></div>${goals.map(g=>`<label class="task-row ${isDone(g.id,date)?"done":""}"><input class="task-check" type="checkbox" data-goal="${g.id}" ${isDone(g.id,date)?"checked":""}><span class="task-copy"><strong>${g.name}</strong><span>${g.duration}${g.notes?` · ${g.notes}`:""}</span></span><span class="badge">${g.priority}</span></label>`).join("")}</article>`).join("")||`<article class="panel"><p>Nenhuma atividade planejada para este dia.</p></article>`;
+ $("#todayTasks").innerHTML=Object.entries(groups).map(([cat,goals])=>`<article class="task-group"><div class="task-group-head"><h3>${categoryTag(cat)}</h3><span>${goals.filter(g=>isDone(g.id,date)).length}/${goals.length}</span></div>${goals.map(g=>`<label class="task-row ${isDone(g.id,date)?"done":""}"><input class="task-check" type="checkbox" data-goal="${g.id}" ${isDone(g.id,date)?"checked":""}><span class="task-copy"><strong>${g.name}</strong><span>${g.duration}${g.notes?` · ${g.notes}`:""}</span></span><span class="badge">${g.priority}</span></label>`).join("")}</article>`).join("")||`<article class="panel"><p>Nenhuma atividade planejada para este dia.</p></article>`;
  $$("#todayTasks .task-check").forEach(el=>el.onchange=()=>{toggleDone(el.dataset.goal,date);renderToday()});
 }
 function renderCalendar(){
  const month=Number($("#monthSelect").value),year=Number($("#yearSelect").value),days=new Date(year,month+1,0).getDate();
- const goals=state.goals.filter(g=>g.active&&g.start<=`${year}-${String(month+1).padStart(2,"0")}-${String(days).padStart(2,"0")}`&&g.end>=`${year}-${String(month+1).padStart(2,"0")}-01`);
- let html=`<thead><tr><th>Objetivo</th>${Array.from({length:days},(_,i)=>`<th>${i+1}<small><br>${week[new Date(year,month,i+1).getDay()].label}</small></th>`).join("")}<th>%</th></tr></thead><tbody>`;
- for(const g of goals){let expected=0,done=0,cells="";for(let d=1;d<=days;d++){const date=new Date(year,month,d),scheduled=isScheduled(g,date),checked=isDone(g.id,date);if(scheduled)expected++;if(checked)done++;cells+=`<td class="day-cell ${checked?"done":""} ${scheduled?"":"disabled"}" data-goal="${g.id}" data-day="${d}">${checked?"✓":scheduled?"":"·"}</td>`}html+=`<tr><td>${g.name}<br><small>${g.category}</small></td>${cells}<td><strong>${Math.round((done/(expected||1))*100)}%</strong></td></tr>`}html+="</tbody>";$("#calendarTable").innerHTML=html;
+ const goals=state.goals.filter(g=>g.active&&g.start<=`${year}-${String(month+1).padStart(2,"0")}-${String(days).padStart(2,"0")}`&&g.end>=`${year}-${String(month+1).padStart(2,"0")}-01`).sort(compareGoals);
+ let html=`<colgroup><col class="goal-col">${Array.from({length:days},()=>'<col class="date-col">').join("")}<col class="percent-col"></colgroup><thead><tr><th>Objetivo</th>${Array.from({length:days},(_,i)=>`<th><span>${i+1}</span><small>${week[new Date(year,month,i+1).getDay()].label}</small></th>`).join("")}<th>%</th></tr></thead><tbody>`;
+ for(const g of goals){let expected=0,done=0,cells="";for(let d=1;d<=days;d++){const date=new Date(year,month,d),scheduled=isScheduled(g,date),checked=isDone(g.id,date);if(scheduled)expected++;if(checked)done++;cells+=`<td class="day-cell ${checked?"done":""} ${scheduled?"":"disabled"}" data-goal="${g.id}" data-day="${d}">${checked?"✓":scheduled?"":"·"}</td>`}html+=`<tr><td class="goal-cell"><strong>${g.name}</strong>${categoryTag(g.category)}</td>${cells}<td class="percent-cell"><strong>${Math.round((done/(expected||1))*100)}%</strong></td></tr>`}html+="</tbody>";$("#calendarTable").innerHTML=html;
  $$("#calendarTable .day-cell:not(.disabled)").forEach(td=>td.onclick=()=>{toggleDone(td.dataset.goal,new Date(year,month,Number(td.dataset.day)));renderCalendar()});
 }
 function renderGoals(){
- const cats=["Todos",...new Set(state.goals.map(g=>g.category))];$("#goalFilters").innerHTML=cats.map(c=>`<button class="filter-chip ${c===currentCategory?"active":""}" data-cat="${c}">${c}</button>`).join("");
+ const usedCategories=[...new Set(state.goals.map(g=>normalizeCategory(g.category)))].sort((a,b)=>categoryInfo(a).index-categoryInfo(b).index);const cats=["Todos",...usedCategories];$("#goalFilters").innerHTML=cats.map(c=>`<button class="filter-chip ${c===currentCategory?"active":""}" data-cat="${c}">${c==="Todos"?c:categoryTag(c)}</button>`).join("");
  $$("#goalFilters button").forEach(b=>b.onclick=()=>{currentCategory=b.dataset.cat;renderGoals()});
- const goals=state.goals.filter(g=>currentCategory==="Todos"||g.category===currentCategory);
- $("#goalsGrid").innerHTML=goals.map(g=>`<article class="goal-card"><div class="goal-card-head"><span class="eyebrow">${g.category}</span><span class="badge">${g.active?"Ativo":"Pausado"}</span></div><h3>${g.name}</h3><p>${g.notes||"Sem observações."}</p><div class="goal-meta"><span class="badge">${g.priority}</span><span class="badge">${frequencyLabel(g.frequency)}</span><span class="badge">${g.duration}</span></div><div class="goal-actions"><button class="text-btn edit-goal" data-id="${g.id}">Editar</button><button class="text-btn toggle-goal" data-id="${g.id}">${g.active?"Pausar":"Ativar"}</button><button class="text-btn delete delete-goal" data-id="${g.id}">Excluir</button></div></article>`).join("");
+ const goals=state.goals.filter(g=>currentCategory==="Todos"||g.category===currentCategory).sort(compareGoals);
+ $("#goalsGrid").innerHTML=goals.map(g=>`<article class="goal-card"><div class="goal-card-head">${categoryTag(g.category)}<span class="badge">${g.active?"Ativo":"Pausado"}</span></div><h3>${g.name}</h3><p>${g.notes||"Sem observações."}</p><div class="goal-meta"><span class="badge">${g.priority}</span><span class="badge">${frequencyLabel(g.frequency)}</span><span class="badge">${g.duration}</span></div><div class="goal-actions"><button class="text-btn edit-goal" data-id="${g.id}">Editar</button><button class="text-btn toggle-goal" data-id="${g.id}">${g.active?"Pausar":"Ativar"}</button><button class="text-btn delete delete-goal" data-id="${g.id}">Excluir</button></div></article>`).join("");
  $$(".edit-goal").forEach(b=>b.onclick=()=>openGoal(b.dataset.id));$$(".toggle-goal").forEach(b=>b.onclick=()=>{const g=state.goals.find(x=>x.id===b.dataset.id);g.active=!g.active;save();renderGoals()});$$(".delete-goal").forEach(b=>b.onclick=()=>{if(confirm("Excluir este objetivo e seu histórico?")){state.goals=state.goals.filter(g=>g.id!==b.dataset.id);Object.keys(state.completions).filter(k=>k.startsWith(b.dataset.id+"|")).forEach(k=>delete state.completions[k]);save();renderGoals()}});
 }
 function dateRange(days){const result=[],end=new Date();for(let i=days-1;i>=0;i--){const d=new Date(end);d.setDate(end.getDate()-i);result.push(d)}return result}
@@ -81,7 +99,7 @@ function renderDashboard(){
  $("#kpiGrid").innerHTML=[["Conclusão anual",`${Math.round(annual*100)}%`],["Objetivos ativos",active],["Dias 100%",perfect],["Categorias",new Set(state.goals.filter(g=>g.active).map(g=>g.category)).size]].map(([a,b])=>`<article class="kpi"><span>${a}</span><strong>${b}</strong></article>`).join("");
  renderColumns("#dailyChart",values,days.map(d=>d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})));
  const catData={};state.goals.filter(g=>g.active).forEach(g=>{const dates=allDays.filter(d=>isScheduled(g,d)),p=dates.length?dates.filter(d=>isDone(g.id,d)).length/dates.length:0;(catData[g.category]??=[]).push(p)});
- $("#categoryChart").innerHTML=Object.entries(catData).map(([cat,vals])=>{const v=vals.reduce((a,b)=>a+b,0)/vals.length;return `<div class="bar-row"><span>${cat}</span><div class="bar-track"><div class="bar-fill" style="width:${v*100}%"></div></div><strong>${Math.round(v*100)}%</strong></div>`}).join("");
+ $("#categoryChart").innerHTML=Object.entries(catData).sort(([a],[b])=>categoryInfo(a).index-categoryInfo(b).index).map(([cat,vals])=>{const v=vals.reduce((a,b)=>a+b,0)/vals.length,info=categoryInfo(cat);return `<div class="bar-row"><span>${cat}</span><div class="bar-track"><div class="bar-fill" style="width:${v*100}%;background:${info.color}"></div></div><strong>${Math.round(v*100)}%</strong></div>`}).join("");
  const monthly=Array.from({length:12},(_,m)=>{const n=new Date(year,m+1,0).getDate();return Array.from({length:n},(_,i)=>dayProgress(new Date(year,m,i+1))).reduce((a,b)=>a+b,0)/n});renderColumns("#monthlyChart",monthly,["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]);
 }
 function renderFinance(){
