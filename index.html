@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon.svg">
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=11">
 </head>
 <body>
   <div class="app-shell">
@@ -22,6 +22,7 @@
       </div>
       <nav id="nav">
         <button class="nav-item active" data-view="hoje"><span>◎</span>Hoje</button>
+        <button class="nav-item" data-view="agenda"><span>▣</span>Agenda</button>
         <button class="nav-item" data-view="calendario"><span>▦</span>Calendário</button>
         <button class="nav-item" data-view="objetivos"><span>◇</span>Objetivos</button>
         <button class="nav-item" data-view="dashboard"><span>⌁</span>Dashboard</button>
@@ -68,6 +69,32 @@
           <input type="date" id="todayPicker">
         </div>
         <div id="todayTasks" class="task-groups"></div>
+      </section>
+
+      <section id="view-agenda" class="view">
+        <div class="section-heading agenda-heading">
+          <div><span class="eyebrow">Organização pessoal</span><h2>Agenda, notas e listas</h2></div>
+          <input type="date" id="agendaDate">
+        </div>
+        <div class="agenda-actions">
+          <button class="primary-btn" id="addAppointment">+ Compromisso</button>
+          <button class="ghost-btn" id="addNote">+ Anotação</button>
+          <button class="ghost-btn" id="addList">+ Lista</button>
+        </div>
+        <div class="agenda-grid">
+          <article class="panel agenda-panel">
+            <div class="panel-title"><div><span class="eyebrow">Horários</span><h3 id="agendaDayTitle">Compromissos</h3></div><span id="appointmentCount"></span></div>
+            <div id="appointmentsList" class="appointments-list"></div>
+          </article>
+          <article class="panel agenda-panel">
+            <div class="panel-title"><div><span class="eyebrow">Caderno</span><h3>Anotações</h3></div><span id="noteCount"></span></div>
+            <div id="notesList" class="notes-list"></div>
+          </article>
+          <article class="panel agenda-panel lists-panel">
+            <div class="panel-title"><div><span class="eyebrow">Organização</span><h3>Minhas listas</h3></div><span id="listCount"></span></div>
+            <div id="customLists" class="custom-lists"></div>
+          </article>
+        </div>
       </section>
 
       <section id="view-calendario" class="view">
@@ -122,7 +149,7 @@
       <section id="view-config" class="view">
         <div class="section-heading"><div><span class="eyebrow">Segurança</span><h2>Dados e backup</h2></div></div>
         <div class="settings-grid">
-          <article class="panel"><h3>Exportar dados</h3><p>Baixe uma cópia de objetivos, conclusões e lançamentos.</p><button id="exportData" class="primary-btn">Baixar backup</button></article>
+          <article class="panel"><h3>Exportar dados</h3><p>Baixe uma cópia de objetivos, conclusões, agenda, notas, listas e lançamentos.</p><button id="exportData" class="primary-btn">Baixar backup</button></article>
           <article class="panel"><h3>Importar dados</h3><p>Restaure um backup criado por este aplicativo.</p><label class="file-btn">Escolher arquivo<input id="importData" type="file" accept=".json"></label></article>
           <article class="panel install-card"><h3>Instalar no celular</h3><p>Adicione à tela inicial para abrir como um programa e usar mesmo sem internet.</p><button id="installApp" class="primary-btn">Instalar aplicativo</button><small id="installHint">A instalação exige um endereço publicado com HTTPS.</small></article>
           <article class="panel danger"><h3>Recomeçar</h3><p>Apaga os dados locais e restaura os objetivos iniciais.</p><button id="resetData" class="danger-btn">Restaurar aplicativo</button></article>
@@ -153,6 +180,39 @@
     </form>
   </dialog>
 
+  <dialog id="appointmentDialog">
+    <form method="dialog" id="appointmentForm" class="modal-form">
+      <div class="modal-head"><div><span class="eyebrow">Agenda</span><h2>Novo compromisso</h2></div><button type="button" class="icon-btn modal-close" data-dialog="appointmentDialog" aria-label="Fechar">×</button></div>
+      <label>Compromisso<input name="title" required placeholder="Ex.: Consulta médica"></label>
+      <div class="form-grid">
+        <label>Data<input name="date" type="date" required></label>
+        <label>Horário<input name="time" type="time"></label>
+      </div>
+      <label>Local<input name="location" placeholder="Opcional"></label>
+      <label>Observações<textarea name="notes" rows="3"></textarea></label>
+      <div class="modal-actions"><button type="button" class="ghost-btn modal-cancel" data-dialog="appointmentDialog">Cancelar</button><button type="submit" class="primary-btn">Salvar compromisso</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="noteDialog">
+    <form method="dialog" id="noteForm" class="modal-form">
+      <div class="modal-head"><div><span class="eyebrow">Caderno</span><h2>Nova anotação</h2></div><button type="button" class="icon-btn modal-close" data-dialog="noteDialog" aria-label="Fechar">×</button></div>
+      <label>Título<input name="title" required placeholder="Ex.: Ideias para esta semana"></label>
+      <label>Anotação<textarea name="content" rows="8" required></textarea></label>
+      <div class="modal-actions"><button type="button" class="ghost-btn modal-cancel" data-dialog="noteDialog">Cancelar</button><button type="submit" class="primary-btn">Salvar anotação</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="listDialog">
+    <form method="dialog" id="listForm" class="modal-form">
+      <div class="modal-head"><div><span class="eyebrow">Listas</span><h2>Nova lista</h2></div><button type="button" class="icon-btn modal-close" data-dialog="listDialog" aria-label="Fechar">×</button></div>
+      <label>Nome da lista<input name="title" required placeholder="Ex.: Compras do mês"></label>
+      <label>Tipo<select name="type"><option>Compras</option><option>Desejos</option><option>Tarefas</option><option>Livros</option><option>Filmes e séries</option><option>Outro</option></select></label>
+      <label>Primeiro item<input name="firstItem" placeholder="Opcional"></label>
+      <div class="modal-actions"><button type="button" class="ghost-btn modal-cancel" data-dialog="listDialog">Cancelar</button><button type="submit" class="primary-btn">Criar lista</button></div>
+    </form>
+  </dialog>
+
   <dialog id="transactionDialog">
     <form method="dialog" id="transactionForm" class="modal-form">
       <div class="modal-head"><div><span class="eyebrow">Finanças</span><h2>Novo lançamento</h2></div><button type="button" class="icon-btn modal-close" data-dialog="transactionDialog" aria-label="Fechar">×</button></div>
@@ -169,6 +229,7 @@
   </dialog>
   <nav class="mobile-nav" aria-label="Navegação principal">
     <button class="mobile-nav-item active" data-view="hoje"><span>◎</span><small>Hoje</small></button>
+    <button class="mobile-nav-item" data-view="agenda"><span>▣</span><small>Agenda</small></button>
     <button class="mobile-nav-item" data-view="calendario"><span>▦</span><small>Mês</small></button>
     <button class="mobile-nav-item" data-view="objetivos"><span>◇</span><small>Objetivos</small></button>
     <button class="mobile-nav-item" data-view="dashboard"><span>⌁</span><small>Resumo</small></button>
@@ -176,6 +237,6 @@
     <button class="mobile-nav-item" data-view="config"><span>DB</span><small>Dados</small></button>
   </nav>
   <div id="toast" class="toast"></div>
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>
